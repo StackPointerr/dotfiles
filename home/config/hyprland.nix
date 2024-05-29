@@ -51,7 +51,14 @@
 
       bind = [
 	"$mod, RETURN, exec, kitty"
+	"$mod, X, exec, firefox"
+	"$mod SHIFT, S, exec, grim -l 0 -g \"$(slurp)\" - | wl-copy"
+	"$mod, SPACE, exec, wofi --show drun"
+
+	"$mod, ., exec, hyprctl dispatch dpms"
+
 	"$mod, W, killactive"
+	"$mod, M, fullscreen"
 
 	"$mod, H, movefocus, l"
 	"$mod, L, movefocus, r"
@@ -63,11 +70,21 @@
 	"$mod SHIFT, K, movewindow, u"
 	"$mod SHIFT, J, movewindow, d"
 
+	"$mod SHIFT, 1, movetoworkspace, 1"
+	"$mod SHIFT, 2, movetoworkspace, 2"
+	"$mod SHIFT, 3, movetoworkspace, 3"
+
 	"$mod ALT, H, resizeactive, -30 0"
 	"$mod ALT, L, resizeactive, 30 0"
 	"$mod ALT, K, resizeactive, 0 -20"
 	"$mod ALT, J, resizeactive, 0 20"
+
+	"$mod, 1, workspace, 1"
+	"$mod, 2, workspace, 2"
+	"$mod, 3, workspace, 3"
       ];
+
+      exec-once = "bash ~/.config/dotfiles/home/config/start.sh";
     };
   };
 }

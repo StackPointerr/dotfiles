@@ -71,10 +71,12 @@
   users.users.krzysztof = {
     isNormalUser = true;
     description = "Krzysztof";
-    extraGroups = [ "networkmanager" "wheel" ];
+    extraGroups = [ "networkmanager" "wheel" "adbusers" ];
     packages = with pkgs; [ ];
     shell = pkgs.zsh;
   };
+
+  programs.adb.enable = true;
 
   # Install firefox.
   programs.firefox.enable = true;

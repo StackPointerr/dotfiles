@@ -30,8 +30,13 @@ in
     };
   };
 
-  stylix.cursor.package = pkgs.bibata-cursors;
-  stylix.cursor.name = "Bibata-Modern-Ice";
+#  stylix.cursor.package = pkgs.bibata-cursors;
+#  stylix.cursor.name = "Bibata-Modern-Classic";
+
+  stylix.cursor.package = pkgs.catppuccin-cursors.mochaBlue;
+  stylix.cursor.name = "Catppuccin-Mocha-Blue-Cursors";
+  stylix.cursor.size = 48;
+
   stylix.polarity = "dark";
 
   home.username = "krzysztof";
@@ -45,6 +50,15 @@ in
     vscode
     devenv
     direnv
+
+    grim
+    slurp
+    wl-clipboard
+    wofi
+    swww
+    waybar
+
+    android-studio
   ];
 
   home.file = {
@@ -65,6 +79,11 @@ in
       plugins = [ "git" "direnv" ];
       theme = "robbyrussell";
     };
+  };
+
+  programs.nix-index = {
+    enable = true;
+    enableZshIntegration = true;
   };
 
   programs.direnv = {
@@ -102,6 +121,8 @@ in
 #      "editor.fontFamily" = "Iosevka";
       "workbench.iconTheme" = "catppuccin-mocha";
 #     "workbench.colorTheme" = "Catppuccin Mocha"; 
+      #"nix.enableLanguageServer" = true;
+      #"nix.serverPath" = "nixd";
     };
   };
 

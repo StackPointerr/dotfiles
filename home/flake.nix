@@ -8,18 +8,23 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    nix-index-database = {
+      url = "github:nix-community/nix-index-database";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     stylix.url = "github:danth/stylix";
   };
 
-  outputs = { nixpkgs, home-manager, stylix, ... }:
+  outputs = { nixpkgs, ... }@inputs:
     let
       system = "x86_64-linux";
       pkgs = nixpkgs.legacyPackages.${system};
     in {
-      homeConfigurations."krzysztof" = home-manager.lib.homeManagerConfiguration {
+      homeConfigurations."krzysztof" = inputs.home-manager.lib.homeManagerConfiguration {
         inherit pkgs;
 
-        modules = [ stylix.homeManagerModules.stylix ./home.nix ];
+        modules = [ inputs.nix-index-database.hmModules.nix-index inputs.stylix.homeManagerModules.stylix ./home.nix ];
       };
     };
 }
