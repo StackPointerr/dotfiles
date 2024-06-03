@@ -1,49 +1,40 @@
-{ config, pkgs, ... }:
-
+{ pkgs, ... }:
 {
-  imports =
-    [ # Include the results of the hardware scan.
-      ./hardware-configuration.nix
-    ];
+  environment.systemPackages = with pkgs; [ git home-manager];
+  environment.defaultPackages = [ ];
 
-  # Bootloader.
-  boot.loader.systemd-boot.enable = true;
-  boot.loader.efi.canTouchEfiVariables = true;
+  nix = {
+    settings = {
+      experimental-features = [ "nix-command" "flakes" ];    
+      auto-optimise-store = true;
+    };
+    extraOptions = "trusted-users = root krzysztof";
+  };
 
-  networking.hostName = "mcos";
-  # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
+  boot = {
+    loader = {
+      systemd-boot.enable = true;
+      efi.canTouchEfiVariables = true;
+    };
+    kernelParams = [ "boot.shell_on_fail" ];
+  };
 
-  # Enable networking
-  networking.networkmanager.enable = true;
+  security.sudo.extraConfig = ''Defaults pwfeedback'';
+
+  networking = {
+    hostName = "mcos";
+    networkmanager.enable = true;
+  };
 
   time.timeZone = "Europe/Warsaw";
-
   i18n.defaultLocale = "pl_PL.UTF-8";
-  i18n.extraLocaleSettings = {
-    LC_ADDRESS = "pl_PL.UTF-8";
-    LC_IDENTIFICATION = "pl_PL.UTF-8";
-    LC_MEASUREMENT = "pl_PL.UTF-8";
-    LC_MONETARY = "pl_PL.UTF-8";
-    LC_NAME = "pl_PL.UTF-8";
-    LC_NUMERIC = "pl_PL.UTF-8";
-    LC_PAPER = "pl_PL.UTF-8";
-    LC_TELEPHONE = "pl_PL.UTF-8";
-    LC_TIME = "pl_PL.UTF-8";
-  };
-
-  services.xserver.enable = true;
-
-#  services.xserver.displayManager.gdm.enable = true;
-#  services.xserver.desktopManager.gnome.enable = true;
-
-  services.xserver.xkb = {
-    layout = "pl";
-    variant = "";
-  };
-
   console.keyMap = "pl2";
 
-  services.printing.enable = true;
+  services.xserver = {
+    enable = true;
+    excludePackages = [ pkgs.xterm ];
+    xkb.layout = "pl";
+  };
 
   sound.enable = true;
   hardware.pulseaudio.enable = false;
@@ -53,45 +44,30 @@
     alsa.enable = true;
     alsa.support32Bit = true;
     pulse.enable = true;
-    # If you want to use JACK applications, uncomment this
-    #jack.enable = true;
-
-    # use the example session manager (no others are packaged yet so this is enabled by default,
-    # no need to redefine it in your config for now)
-    #media-session.enable = true;
   };
+
+  services.printing.enable = true;
 
   services.udev.extraRules = ''
     ACTION=="add", SUBSYSTEM=="backlight", KERNEL=="intel_backlight", MODE="0666", RUN+="${pkgs.coreutils}/bin/chmod a+w /sys/class/backlight/%k/brightness"
   '';
 
-  # Enable touchpad support (enabled default in most desktopManager).
-  # services.xserver.libinput.enable = true;
-
   users.users.krzysztof = {
     isNormalUser = true;
     description = "Krzysztof";
     extraGroups = [ "networkmanager" "wheel" "adbusers" ];
-    packages = with pkgs; [ ];
+    packages = [ ];
     shell = pkgs.zsh;
   };
 
   programs.adb.enable = true;
-
-  # Install firefox.
-  programs.firefox.enable = true;
-
-  programs.neovim.enable = true;
-  programs.neovim.defaultEditor = true;
-
   programs.zsh.enable = true;
-
   programs.hyprland = {
     enable = true;
     xwayland.enable = true;
   };
 
-  stylix.base16Scheme = "${pkgs.base16-schemes}/share/themes/gruvbox-dark-medium.yaml";
+  stylix.base16Scheme = "${pkgs.base16-schemes}/share/themes/catppuccin-mocha.yaml";
   stylix.image = pkgs.fetchurl {
     url = "https://www.pixelstalk.net/wp-content/uploads/2016/05/Epic-Anime-Awesome-Wallpapers.jpg";
     sha256 = "enQo3wqhgf0FEPHj2coOCvo7DuZv+x5rL/WIo4qPI50=";
@@ -106,22 +82,5 @@
     nvidia.modesetting.enable = true;
   };
 
-  nixpkgs.config.allowUnfree = true;
-
-  # To search run: $ nix search wget
-  nix.settings.experimental-features = [ "nix-command" "flakes" ];
-	
-  nix.extraOptions = "trusted-users = root krzysztof";
-
-  environment.systemPackages = with pkgs; [
-     neovim
-     git
-     home-manager
-     kitty
-  ];
-
-  # Enable the OpenSSH daemon.
-  # services.openssh.enable = true;
-
-  system.stateVersion = "23.11"; # Did you read the comment?
+  system.stateVersion = "23.11";
 }

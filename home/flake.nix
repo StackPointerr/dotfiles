@@ -19,7 +19,12 @@
   outputs = { nixpkgs, ... }@inputs:
     let
       system = "x86_64-linux";
-      pkgs = nixpkgs.legacyPackages.${system};
+      pkgs = import nixpkgs {
+	inherit system;
+	config = {
+	  android_sdk.accept_license = true;
+	};
+      };
     in {
       homeConfigurations."krzysztof" = inputs.home-manager.lib.homeManagerConfiguration {
         inherit pkgs;

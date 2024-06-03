@@ -1,9 +1,30 @@
-{ config, pkgs, ... }:
-
-let
-  username = "krzysztof";
-in
+{ pkgs, ... }:
 {
+  programs.waybar = {
+    enable = true;
+    style = builtins.readFile ./waybar/style.css;
+    settings = {
+      mainBar = {
+        layer = "top";
+        margin-top = 5;
+        margin-bottom = 5;
+        modules-left = [ "custom/logo" ];
+        modules-right = [ "clock" ];
+
+        "custom/logo" = {
+          format = "󱄅";
+          on-click = "wofi --show drun";
+          on-click-right = "killall .wofi-wrapped";
+        };
+
+        clock = {
+          format = " {:%H:%M:%S 󰃭 %d/%m/%Y}";
+          interval = 1;
+        };
+      };
+    };
+  };
+
   imports = [ ./config/hyprland.nix ];
 
   stylix.base16Scheme = "${pkgs.base16-schemes}/share/themes/catppuccin-mocha.yaml";
@@ -51,23 +72,28 @@ in
     devenv
     direnv
 
+    (nerdfonts.override { fonts = ["NerdFontsSymbolsOnly"]; })
+
+    nixd
+
+    frida-tools
+    jdk
+
     grim
     slurp
     wl-clipboard
     wofi
     swww
     waybar
-
-    android-studio
   ];
 
-  home.file = {
-  };
-
   gtk.enable = true;
-
   qt.enable = true;
-  qt.platformTheme.name = "gtk";
+
+  wayland.windowManager.hyprland = {
+    enable = true;
+    xwayland.enable = true;
+  };
 
   programs.zsh = {
     enable = true;
@@ -80,6 +106,8 @@ in
       theme = "robbyrussell";
     };
   };
+
+  programs.firefox.enable =  true;
 
   programs.nix-index = {
     enable = true;
@@ -118,11 +146,18 @@ in
 
       "terminal.integrated.defaultProfile.linux" = "zsh";
 
-#      "editor.fontFamily" = "Iosevka";
+#      "editor.fontFamily" = "Iosevka"
       "workbench.iconTheme" = "catppuccin-mocha";
 #     "workbench.colorTheme" = "Catppuccin Mocha"; 
-      #"nix.enableLanguageServer" = true;
-      #"nix.serverPath" = "nixd";
+      "nix.enableLanguageServer" = true;
+      "nix.serverPath" = "nixd";
+      "editor.formatOnSave" = true;
+
+      "explorer.excludeGitIgnore" = true;
+
+      "apklab.jadxDirPath" = "/home/krzysztof/.apklab/jadx-1.4.7";
+      "apklab.apkSignerPath" = "/home/krzysztof/.apklab/uber-apk-signer-1.3.0.jar";
+      "apklab.apktoolPath" = "/home/krzysztof/.apklab/apktool_2.9.3.jar";
     };
   };
 
@@ -132,9 +167,8 @@ in
     enable = true;
   };
 
-  home.sessionVariables = {
-    EDITOR = "nvim";
-  };
+  programs.neovim.enable = true;
+  programs.neovim.defaultEditor = true;
 
   home.stateVersion = "23.11";
   programs.home-manager.enable = true;
