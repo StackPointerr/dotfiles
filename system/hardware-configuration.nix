@@ -14,16 +14,14 @@
   boot.extraModulePackages = [ ];
 
   fileSystems."/" =
-    { device = "/dev/disk/by-uuid/5a584e36-f91c-4f61-8bd3-c1fa100ea02c";
+    { device = "/dev/disk/by-uuid/6b9a17ef-3598-44b6-9659-c92a30ae2fc1";
       fsType = "ext4";
     };
-
-  boot.initrd.luks.devices."luks-aff7d36b-14ce-4a48-8c2b-ae46a66dd2f2".device = "/dev/disk/by-uuid/aff7d36b-14ce-4a48-8c2b-ae46a66dd2f2";
 
   fileSystems."/boot" =
     { device = "/dev/disk/by-uuid/D2DC-EA6E";
       fsType = "vfat";
-      options = [ "fmask=0022" "dmask=0022" ];
+      options = [ "fmask=0077" "dmask=0077" ];
     };
 
   swapDevices = [ ];
@@ -34,6 +32,7 @@
   # with explicit per-interface declarations with `networking.interfaces.<interface>.useDHCP`.
   networking.useDHCP = lib.mkDefault true;
   # networking.interfaces.enp0s25.useDHCP = lib.mkDefault true;
+  # networking.interfaces.vboxnet0.useDHCP = lib.mkDefault true;
   # networking.interfaces.wlp3s0.useDHCP = lib.mkDefault true;
   # networking.interfaces.wwp0s20u4.useDHCP = lib.mkDefault true;
 

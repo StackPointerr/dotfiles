@@ -1,7 +1,27 @@
-{ pkgs, ... }:
+{ inputs, outputs, pkgs, ... }:
 {
-  environment.systemPackages = with pkgs; [ git home-manager];
+  imports = [
+    ./hardware-configuration.nix
+    ./modules
+  ];
+
+  modules.virtualbox.enable = true;
+    
+  environment.systemPackages = with pkgs; [ git home-manager nh android-studio gparted keepassxc man-pages ];
   environment.defaultPackages = [ ];
+
+  documentation.dev.enable = true;
+
+  documentation.man = {
+    # In order to enable to mandoc man-db has to be disabled.
+    man-db.enable = false;
+    mandoc.enable = true;
+  };
+
+  environment.sessionVariables = {
+    FLAKE = "/home/krzysztof/.config/dotfiles/";
+    MANPAGER = "nvim +Man!";
+  };
 
   nix = {
     settings = {
@@ -9,6 +29,15 @@
       auto-optimise-store = true;
     };
     extraOptions = "trusted-users = root krzysztof";
+  };
+
+  nixpkgs = {
+    config.allowUnfree = true;
+
+    overlays = [
+      outputs.overlays.unstable-packages
+      outputs.overlays.additions
+    ];
   };
 
   boot = {
@@ -30,13 +59,28 @@
   i18n.defaultLocale = "pl_PL.UTF-8";
   console.keyMap = "pl2";
 
-  services.xserver = {
-    enable = true;
-    excludePackages = [ pkgs.xterm ];
-    xkb.layout = "pl";
+  services = {
+    desktopManager.plasma6.enable = true;
+    displayManager.sddm.enable = true;
+    displayManager.sddm.wayland.enable = true;
   };
 
-  sound.enable = true;
+  services.xserver.xkb.layout = "pl";
+
+  services.keyd = {
+    enable = true;
+    keyboards = {
+      default = {
+        ids = [ "*" ];
+        settings = {
+          main = {
+            capslock = "overload(control, esc)";
+          };
+        };
+      };
+    };
+  };
+
   hardware.pulseaudio.enable = false;
   security.rtkit.enable = true;
   services.pipewire = {
@@ -62,25 +106,6 @@
 
   programs.adb.enable = true;
   programs.zsh.enable = true;
-  programs.hyprland = {
-    enable = true;
-    xwayland.enable = true;
-  };
-
-  stylix.base16Scheme = "${pkgs.base16-schemes}/share/themes/catppuccin-mocha.yaml";
-  stylix.image = pkgs.fetchurl {
-    url = "https://www.pixelstalk.net/wp-content/uploads/2016/05/Epic-Anime-Awesome-Wallpapers.jpg";
-    sha256 = "enQo3wqhgf0FEPHj2coOCvo7DuZv+x5rL/WIo4qPI50=";
-  };
-
-  stylix.cursor.package = pkgs.bibata-cursors;
-  stylix.cursor.name = "Bibata-Modern-Ice";
-  stylix.polarity = "dark";
-
-  hardware = {
-    opengl.enable = true;
-    nvidia.modesetting.enable = true;
-  };
 
   system.stateVersion = "23.11";
 }
